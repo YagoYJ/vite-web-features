@@ -2,6 +2,7 @@
 
 - Vite
 - TailWind
+- ESLint
 
 ## Vite
 O Vite é uma ferramente para compilar nosso código, ele é mais rapido que o Webpack e mais enxuto.
@@ -77,3 +78,105 @@ export function App() {
 ```
 
 **Aviso: Reiniciei o projeto caso ele dê erro**
+
+### ESLint
+Para quem não conhece, o ESLint serve para padronizar o seu código, é muito bom para quem trabalha em equipe, pois todos vão ter as mesmas regras em relação ao código, deixando ele mais entendível, igual para todos os devs e também deixa o código mais bonito.
+
+Antes de começar, precisamos instalar as extensões do VSCode **ESLint** e **Prettier**, e também configurar o VSCode para respeitar as configurações do Lint.
+Aperte ***CTRL + SHIFT + P** e procure por **Open User Settings (JSON)**, nele, adicione as seguintes configurações, ou substitua caso já exista:
+```json
+   "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+```
+
+Agora vamos instalar o ESLint:
+```cmd
+yarn add eslint -D
+```
+
+em seguida vamos configurá-lo:
+```cmd
+yarn eslint --init
+```
+
+Irá aparecer uma sequência de perguntas, você pode responder com o que você preferir, mas o desse projeto foi o seguinte:
+- To check syntax, find problems, and enforce code style
+- JavaScript modules (import/export)
+- React
+- Yes
+- Browser
+- Answer questions about your style
+- JSON
+- Spaces
+- Double
+- Windows
+- Yes
+- Yes
+- yarn
+
+O seu arquivo `.eslintrc.json` será gerado de acordo com as suas respostas.
+
+Vamos instalar as dependências do Prettier:
+```cmd
+yarn add prettier eslint-config-prettier eslint-plugin-prettier -D
+```
+
+ Com tudo instalado, faremos algumas modificações no arquivo `.eslintrc.json` para ficar desse jeito:
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
+  "overrides": [],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint", "prettier"],
+  "ignorePatterns": ["tsconfig.node.json"],
+  "rules": {
+    "indent": ["error", 2],
+    "linebreak-style": ["error", "windows"],
+    "quotes": ["error", "double"],
+    "semi": ["error", "always"],
+    "import/no-unresolved": "off",
+    "import/prefer-default-export": "off",
+    "react/react-in-jsx-scope": "off",
+    "prettier/prettier": "off",
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "interface",
+        "format": ["PascalCase"]
+      }
+    ]
+  }
+}
+```
+
+No `tsconfig.json` vamos modificar o **include**:
+```json
+  "include": [".eslintrc.json", "src"],
+```
+
+Pronto! Agora cada vez que você salvar o projeto ou formatar/identar ele, o código irá ficar no padrão do ESLint.
