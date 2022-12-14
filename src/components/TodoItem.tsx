@@ -1,24 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, PencilSimple, Trash, X } from "phosphor-react";
-
-import { Todo, UpdateTodoPayload } from "../App";
+import { Todo } from "../redux/todo/types";
+import { useDispatch } from "react-redux";
+import {
+  deleteTodo,
+  toggleCompleted,
+  updateTodo,
+} from "../redux/todo/todoSlice";
 
 interface TodoItemProps {
   todo: Todo;
-  completedTodo: (todoId: string) => void;
-  updateTodo: ({ id, title }: UpdateTodoPayload) => void;
-  deleteTodo: (id: string) => void;
 }
 
-export function TodoItem({
-  todo,
-  completedTodo,
-  updateTodo,
-  deleteTodo,
-}: TodoItemProps) {
+export function TodoItem({ todo }: TodoItemProps) {
   const [newValue, setNewValue] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const dispatch = useDispatch();
 
   function cancelEdit() {
     setIsEditing(false);
@@ -27,7 +26,7 @@ export function TodoItem({
 
   function handleUpdateTodo() {
     setIsEditing(false);
-    updateTodo({ id: todo.id, title: newValue });
+    dispatch(updateTodo({ id: todo.id, title: newValue }));
     setNewValue("");
   }
 
@@ -49,7 +48,7 @@ export function TodoItem({
         <label
           htmlFor="toggle-task-done"
           className="text-sm font-medium text-gray-900 dark:text-gray-300"
-          onClick={() => completedTodo(todo.id)}
+          onClick={() => dispatch(toggleCompleted({ todoId: todo.id }))}
         >
           {todo.completed ? (
             <div className="w-4 h-4 bg-emerald-500 cursor-pointer rounded-sm flex items-center justify-center">
@@ -101,7 +100,7 @@ export function TodoItem({
 
             <button
               className="hover:[&>*]:text-red-500"
-              onClick={() => deleteTodo(todo.id)}
+              onClick={() => dispatch(deleteTodo({ id: todo.id }))}
             >
               <Trash size={20} className="text-emerald-50" />
             </button>
