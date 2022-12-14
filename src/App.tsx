@@ -1,73 +1,23 @@
 import { useState } from "react";
 import { Plus } from "phosphor-react";
+import { useSelector, useDispatch } from "react-redux";
 
 import { Header } from "./components/Header";
 import { TextInput } from "./components/TextInput";
 import { TodoList } from "./components/TodoList";
-
-export type Todo = {
-  userId: string;
-  id: string;
-  title: string;
-  completed: boolean;
-};
-
-export type UpdateTodoPayload = {
-  id: string;
-  title: string;
-};
+import { RootState } from "./redux/store";
+import { createTodo } from "./redux/todo/todoSlice";
 
 export function App() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const dispatch = useDispatch();
+  const { todos } = useSelector((state: RootState) => state.todoReducer);
+
   const [newTodo, setNewTodo] = useState("");
 
-  function createTodo(title: string) {
-    setTodos((prevState) => [
-      ...prevState,
-      {
-        userId: "1",
-        id: String(todos.length),
-        title: title,
-        completed: false,
-      },
-    ]);
+  function handleCreateTodo(title: string) {
+    dispatch(createTodo({ title }));
+
     setNewTodo("");
-  }
-
-  function toggleCompleted(todoId: string) {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === todoId) {
-        return {
-          ...todo,
-          completed: !todo.completed,
-        };
-      } else {
-        return todo;
-      }
-    });
-
-    setTodos(updatedTodos);
-  }
-
-  function updateTodo({ id, title }: UpdateTodoPayload) {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return {
-          ...todo,
-          title,
-        };
-      } else {
-        return todo;
-      }
-    });
-
-    setTodos(updatedTodos);
-  }
-
-  function deleteTodo(id: string) {
-    const updatedTodos = todos.filter((todo) => todo.id !== id);
-
-    setTodos(updatedTodos);
   }
 
   return (
@@ -80,12 +30,7 @@ export function App() {
             {todos.length === 0 ? (
               <h2 className="text-gray-200">Nenhuma atividade adicionada</h2>
             ) : (
-              <TodoList
-                todos={todos}
-                toggleCompleted={toggleCompleted}
-                updateTodo={updateTodo}
-                deleteTodo={deleteTodo}
-              />
+              <TodoList todos={todos} />
             )}
           </div>
 
@@ -99,7 +44,7 @@ export function App() {
             <button
               type="button"
               className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold h-10 w-10 rounded-md flex items-center justify-center"
-              onClick={() => createTodo(newTodo)}
+              onClick={() => handleCreateTodo(newTodo)}
             >
               <Plus size={20} />
             </button>

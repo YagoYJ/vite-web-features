@@ -3,6 +3,7 @@
 - Vite
 - TailWind
 - ESLint
+- Redux Toolkit
 
 ## Vite
 O Vite é uma ferramente para compilar nosso código, ele é mais rapido que o Webpack e mais enxuto.
@@ -180,3 +181,193 @@ No `tsconfig.json` vamos modificar o **include**:
 ```
 
 Pronto! Agora cada vez que você salvar o projeto ou formatar/identar ele, o código irá ficar no padrão do ESLint.
+
+### Redux Toolkit
+
+Vamos começar instalando ele para o react:
+
+```cmd
+yarn add @reduxjs/toolkit react-redux
+```
+
+Crie um arquivo `src/redux/store.ts` e adicione o seguinte códgo para criar o store inicial:
+
+```ts
+import { configureStore } from "@reduxjs/toolkit";
+
+export const store = configureStore({
+  reducer: {},
+});
+
+// Infere os tipos `RootState` e `AppDispatch` do próprio store
+export type RootState = ReturnType<typeof store.getState>
+// Exemplo de tipo inferido: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
+```
+
+No arquivo `App.tsx` adicione o Provider buscando o store.
+
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { App } from "./App";
+import { store } from "./app/store"; // adicione essa linha
+import { Provider } from "react-redux"; // adicione essa linha
+import "./main.css";
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <Provider store={store}> {/* adicione essa linha */}
+      <App />
+    </Provider> {/* adicione essa linha */}
+  </React.StrictMode>
+);
+```
+
+Dentro da pasta `redux` você deve adicionar uma pasta para cada feature, nesse exemplo vamos usar o `todo`, dentro dele devemos criar o `todoSlice.ts`:
+
+```ts
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import {
+  CreateTodoPayload,
+  DeleteTodoPayload,
+  TodoState,
+  ToggleCompleteTodoPayload,
+  UpdateTodoPayload,
+} from "./types";
+
+const initialState: TodoState = {
+  todos: [],
+};
+
+export const todoSlice = createSlice({
+  name: "todo",
+  initialState,
+  reducers: {
+    createTodo: (state, action: PayloadAction<CreateTodoPayload>) => {
+      state.todos = [
+        ...state.todos,
+        {
+          completed: false,
+          id: String(state.todos.length),
+          title: action.payload.title,
+          userId: "1",
+        },
+      ];
+    },
+    toggleCompleted: (
+      state,
+      action: PayloadAction<ToggleCompleteTodoPayload>
+    ) => {
+      state.todos = state.todos.map((todo) => {
+        if (todo.id === action.payload.todoId) {
+          return {
+            ...todo,
+            completed: !todo.completed,
+          };
+        } else {
+          return todo;
+        }
+      });
+    },
+    updateTodo: (state, action: PayloadAction<UpdateTodoPayload>) => {
+      state.todos = state.todos.map((todo) => {
+        if (todo.id === action.payload.id) {
+          return {
+            ...todo,
+            title: action.payload.title,
+          };
+        } else {
+          return todo;
+        }
+      });
+    },
+    deleteTodo: (state, action: PayloadAction<DeleteTodoPayload>) => {
+      state.todos = state.todos.filter((todo) => todo.id !== action.payload.id);
+    },
+  },
+});
+
+// Action creators are generated for each case reducer function
+export const { createTodo, deleteTodo, toggleCompleted, updateTodo } =
+  todoSlice.actions;
+
+export const todoReducer = todoSlice.reducer;
+```
+
+Você pode adicionar as tipagens na mesma página, mas eu preferi adicionar eu um arquivo `types.ts`: 
+```ts
+export type Todo = {
+  userId: string;
+  id: string;
+  title: string;
+  completed: boolean;
+};
+
+export type CreateTodoPayload = {
+  title: string;
+};
+
+export type ToggleCompleteTodoPayload = {
+  todoId: string;
+};
+
+export type UpdateTodoPayload = {
+  id: string;
+  title: string;
+};
+
+export type DeleteTodoPayload = {
+  id: string;
+};
+
+export type TodoState = {
+  todos: Todo[];
+};
+```
+
+Adicione o reducer no store.
+```ts
+import { configureStore } from "@reduxjs/toolkit";
+import { todoReducer } from "./todo/todoSlice"; // Adicione essa lina
+
+export const store = configureStore({
+  reducer: {
+    todoReducer, // Adicione essa lina
+  },
+});
+
+// Infere os tipos `RootState` e `AppDispatch` do próprio store
+export type RootState = ReturnType<typeof store.getState>;
+// Exemplo de tipo inferido: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
+```
+
+Para usar a função:
+```tsx
+import { useState } from "react";
+import { Plus } from "phosphor-react";
+import { useSelector, useDispatch } from "react-redux";
+
+import { Header } from "./components/Header";
+import { TextInput } from "./components/TextInput";
+import { TodoList } from "./components/TodoList";
+
+import { RootState } from "./redux/store"; // Adicione essa linha
+import { createTodo } from "./redux/todo/todoSlice"; // Adicione essa linha
+
+export function App() {
+  const dispatch = useDispatch(); // Adicione essa linha
+  const { todos } = useSelector((state: RootState) => state.todoReducer); // Adicione essa linha
+
+  const [newTodo, setNewTodo] = useState("");
+
+  function handleCreateTodo(title: string) {
+    dispatch(createTodo({ title })); // Adicione essa linha
+
+    setNewTodo("");
+  }
+
+// ... Resto do código
+```
