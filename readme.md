@@ -4,6 +4,7 @@
 - TailWind
 - ESLint
 - Redux Toolkit
+- React Router
 
 ## Vite
 O Vite é uma ferramente para compilar nosso código, ele é mais rapido que o Webpack e mais enxuto.
@@ -370,4 +371,56 @@ export function App() {
   }
 
 // ... Resto do código
+```
+
+### React Router
+
+Documentação completa: [https://reactrouter.com/en/main/start/tutorial](https://reactrouter.com/en/main/start/tutorial)
+
+Vamos iniciar instalando as dependências necessárias:
+
+```cmd
+npm install react-router-dom localforage match-sorter sort-by
+ou
+yarn react-router-dom localforage match-sorter sort-by
+```
+
+Em seguida, crie um arquivo para adicionar as rotas:
+
+```tsx
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+import { Todo } from "../pages/Todo";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Todo />,
+  },
+]);
+
+export function Routes() {
+  return <RouterProvider router={router} />;
+}
+```
+
+Por fim, adicione o componente Routes no `main.tsx`
+```tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+
+import { store } from "./redux/store";
+
+import { Routes } from "./routes/index.routes";
+
+import "./main.css";
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <Routes />
+    </Provider>
+  </React.StrictMode>
+);
 ```

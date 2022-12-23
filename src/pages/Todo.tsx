@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Plus } from "phosphor-react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { Header } from "./components/Header";
-import { TextInput } from "./components/TextInput";
-import { TodoList } from "./components/TodoList";
-import { RootState } from "./redux/store";
-import { createTodo } from "./redux/todo/todoSlice";
+import { Header } from "../components/Header";
+import { TextInput } from "../components/TextInput";
+import { TodoList } from "../components/TodoList";
 
-export function App() {
+import { RootState } from "../redux/store";
+import { createTodo } from "../redux/todo/todoSlice";
+
+export function Todo() {
   const dispatch = useDispatch();
   const { todos } = useSelector((state: RootState) => state.todoReducer);
 
