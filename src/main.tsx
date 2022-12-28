@@ -6,7 +6,6 @@ import { store } from "./redux/store";
 
 import { Routes } from "./routes/index.routes";
 
-import "rsuite/dist/rsuite.min.css";
 import "./main.css";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

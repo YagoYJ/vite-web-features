@@ -18,7 +18,6 @@
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.0",
-    "rsuite": "^5.23.3",
     "sort-by": "^1.2.0"
   },
   "devDependencies": {
