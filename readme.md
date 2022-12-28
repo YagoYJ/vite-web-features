@@ -5,7 +5,6 @@
 - ESLint
 - Redux Toolkit
 - React Router
-- RSuite
 
 ## Vite
 O Vite é uma ferramente para compilar nosso código, ele é mais rapido que o Webpack e mais enxuto.
@@ -424,22 +423,4 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     </Provider>
   </React.StrictMode>
 );
-```
-
-### RSuite
-
-O RSuite é uma bilioteca de componentes que facilita a criação de layouts. Ela é semelhante ao Material UI, Bootstrap, etc.
-
-Ele é bem simples de usar, na documentação tem exemplos de todos os componentes: [https://rsuitejs.com/guide/usage/](https://rsuitejs.com/guide/usage/)
-
-Tudo que precisa ser feito antes de sair usando é só instalar a dependência dele
-
-```cmd
-yarn add rsuite
-```
-
-e adicionar os estilos no `main.tsx`:
-
-```tsx
-import "rsuite/dist/rsuite.min.css";
 ```
